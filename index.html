@@ -1,0 +1,1545 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Happy Birthday, My Cutiee ♡</title>
+  
+  <!-- Google Fonts: Quicksand (clean cute body), Caveat & Dancing Script (handwritten cursive), Playfair Display (editorial romantic) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;600;700&family=Dancing+Script:wght@600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,400&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  
+  <!-- Canvas Confetti CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            blush: {
+              50: '#fff7f8',
+              100: '#ffedf1',
+              200: '#ffd6e1',
+              300: '#ffb3c6',
+              400: '#f87b9e',
+              500: '#e84877',
+              600: '#cf2d5f',
+            },
+            cream: {
+              50: '#fdfbf7',
+              100: '#fcf7ee',
+              200: '#f6ecda',
+              300: '#eee0c5',
+            },
+            parchment: '#faf6f0',
+            wax: '#b91c1c',
+            espresso: '#382b2b'
+          },
+          fontFamily: {
+            sans: ['Quicksand', 'sans-serif'],
+            cursive: ['Dancing Script', 'cursive'],
+            handwriting: ['Caveat', 'cursive'],
+            serif: ['Playfair Display', 'serif'],
+          },
+          boxShadow: {
+            'soft': '0 10px 30px -5px rgba(244, 114, 182, 0.18), 0 4px 12px -2px rgba(244, 114, 182, 0.1)',
+            'card': '0 15px 35px -10px rgba(186, 114, 134, 0.22), 0 5px 15px rgba(0,0,0,0.04)',
+            'polaroid': '0 12px 28px -6px rgba(70, 40, 50, 0.16), 0 4px 8px rgba(0,0,0,0.06)',
+            'wax': '0 6px 16px rgba(185, 28, 28, 0.4), inset 0 2px 4px rgba(255, 255, 255, 0.3)',
+            'glow': '0 0 25px rgba(244, 114, 182, 0.45)',
+          },
+          animation: {
+            'float-slow': 'float 5s ease-in-out infinite',
+            'float-gentle': 'floatGentle 3s ease-in-out infinite',
+            'bounce-cute': 'bounceCute 2s infinite',
+            'pulse-glow': 'pulseGlow 2s infinite',
+            'wiggle': 'wiggle 1s ease-in-out infinite',
+          },
+          keyframes: {
+            float: {
+              '0%, 100%': { transform: 'translateY(0px)' },
+              '50%': { transform: 'translateY(-10px)' },
+            },
+            floatGentle: {
+              '0%, 100%': { transform: 'translateY(0px) rotate(0deg)' },
+              '50%': { transform: 'translateY(-6px) rotate(1.5deg)' },
+            },
+            bounceCute: {
+              '0%, 100%': { transform: 'translateY(0)' },
+              '50%': { transform: 'translateY(-8px) scale(1.02)' },
+            },
+            pulseGlow: {
+              '0%, 100%': { transform: 'scale(1)', filter: 'drop-shadow(0 0 10px rgba(244, 114, 182, 0.4))' },
+              '50%': { transform: 'scale(1.06)', filter: 'drop-shadow(0 0 20px rgba(244, 114, 182, 0.75))' },
+            },
+            wiggle: {
+              '0%, 100%': { transform: 'rotate(-3deg)' },
+              '50%': { transform: 'rotate(3deg)' },
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* Custom Scrollbar and Base Utilities */
+    body {
+      background: linear-gradient(135deg, #fff7f8 0%, #fff0f3 40%, #fdf6ec 100%);
+      color: #382b2b;
+      min-height: 100vh;
+      overflow-x: hidden;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    /* Floating petals canvas behind UI */
+    #petals-canvas {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    /* Screen transition smooth states */
+    .journey-screen {
+      opacity: 0;
+      transform: translateY(18px) scale(0.98);
+      pointer-events: none;
+      position: absolute;
+      inset: 0;
+      transition: opacity 0.55s cubic-bezier(0.4, 0, 0.2, 1), transform 0.55s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .journey-screen.active {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+      pointer-events: auto;
+      position: relative;
+    }
+
+    /* Envelope 3D Styling */
+    .envelope-perspective {
+      perspective: 1200px;
+    }
+
+    .envelope-box {
+      position: relative;
+      background: #fdfbf7;
+      border: 2px solid #fed7e2;
+      border-radius: 18px;
+      box-shadow: 0 20px 40px -10px rgba(235, 120, 150, 0.25);
+    }
+
+    .envelope-flap {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 120px;
+      transform-origin: top center;
+      transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+      z-index: 20;
+      backface-visibility: hidden;
+    }
+
+    .envelope-flap.open {
+      transform: rotateX(180deg);
+    }
+
+    /* 3D Flip Card for Flower Wishes */
+    .flower-card-inner {
+      transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+      transform-style: preserve-3d;
+    }
+
+    .flower-card.flipped .flower-card-inner {
+      transform: rotateY(180deg);
+    }
+
+    .flower-card-front, .flower-card-back {
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+    }
+
+    .flower-card-back {
+      transform: rotateY(180deg);
+    }
+
+    /* Washi Tape Accent */
+    .washi-tape {
+      background: rgba(254, 205, 211, 0.7);
+      background-image: repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(255, 255, 255, 0.5) 10px, rgba(255, 255, 255, 0.5) 20px);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+    }
+
+    /* Custom Audio Progress Bar */
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      height: 14px;
+      width: 14px;
+      border-radius: 50%;
+      background: #f472b6;
+      cursor: pointer;
+      box-shadow: 0 0 6px rgba(244, 114, 182, 0.5);
+    }
+
+    /* Sparkle cursor click trail */
+    .click-heart {
+      position: fixed;
+      pointer-events: none;
+      z-index: 9999;
+      animation: heartFloatUp 0.9s cubic-bezier(0.2, 0.8, 0.3, 1) forwards;
+    }
+
+    @keyframes heartFloatUp {
+      0% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(0.6) rotate(0deg);
+      }
+      50% {
+        transform: translate(-50%, -75px) scale(1.15) rotate(15deg);
+      }
+      100% {
+        opacity: 0;
+        transform: translate(-50%, -120px) scale(1.4) rotate(-15deg);
+      }
+    }
+  </style>
+</head>
+<body class="flex flex-col min-h-screen text-espresso selection:bg-pink-200 selection:text-pink-800 antialiased">
+
+  <!-- Interactive Floating Petals & Sparkles Canvas Background -->
+  <canvas id="petals-canvas"></canvas>
+
+  <!-- Sound & Audio Control Floating Pill (Always Accessible) -->
+  <header class="fixed top-3 right-3 sm:top-5 sm:right-6 z-50 flex items-center gap-2">
+    <button id="sound-effects-toggle" class="bg-white/80 backdrop-blur-md px-3 py-1.5 rounded-full text-xs font-medium text-pink-600 shadow-sm border border-pink-100 hover:bg-pink-50 transition-all flex items-center gap-1.5 active:scale-95">
+      <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
+      <span id="sound-status-text">Sound ON</span>
+    </button>
+    <button id="quick-music-toggle" class="bg-white/80 backdrop-blur-md p-2 rounded-full text-pink-500 shadow-sm border border-pink-100 hover:bg-pink-50 transition-all active:scale-95" title="Toggle Romantic Song">
+      <i data-lucide="music-2" id="quick-music-icon" class="w-4 h-4 animate-spin-slow"></i>
+    </button>
+  </header>
+
+  <!-- Step Progress Dots -->
+  <div class="fixed top-4 left-1/2 -translate-x-1/2 z-40 flex items-center gap-2 bg-white/70 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-pink-100 shadow-sm">
+    <div id="dot-1" class="w-2.5 h-2.5 rounded-full bg-pink-500 transition-all duration-300"></div>
+    <div id="dot-2" class="w-2 h-2 rounded-full bg-pink-200 transition-all duration-300"></div>
+    <div id="dot-3" class="w-2 h-2 rounded-full bg-pink-200 transition-all duration-300"></div>
+    <div id="dot-4" class="w-2 h-2 rounded-full bg-pink-200 transition-all duration-300"></div>
+    <div id="dot-5" class="w-2 h-2 rounded-full bg-pink-200 transition-all duration-300"></div>
+  </div>
+
+  <!-- Main Multi-step Journey Container -->
+  <main class="flex-1 flex items-center justify-center p-4 sm:p-6 md:p-8 relative z-10 max-w-xl mx-auto w-full min-h-[92vh]">
+
+    <!-- ========================================== -->
+    <!-- STEP 1: THE SEALED ENVELOPE (INTRO)        -->
+    <!-- ========================================== -->
+    <section id="step-1" class="journey-screen active w-full flex flex-col items-center text-center my-auto">
+      
+      <!-- Subtle top header tag -->
+      <div class="inline-flex items-center gap-1.5 bg-pink-50/90 text-pink-600 border border-pink-200/80 px-4 py-1 rounded-full text-xs font-semibold tracking-wider uppercase mb-3 shadow-xs animate-float-gentle">
+        <i data-lucide="heart" class="w-3.5 h-3.5 fill-pink-500 text-pink-500"></i>
+        <span>MADE WITH SO MUCH LOVE</span>
+        <i data-lucide="heart" class="w-3.5 h-3.5 fill-pink-500 text-pink-500"></i>
+      </div>
+
+      <!-- Main Greetings Title -->
+      <h1 class="text-3xl sm:text-4xl md:text-5xl font-serif font-bold text-pink-700 tracking-tight mb-0.5">
+        Hello Cutiee
+      </h1>
+      <p class="font-cursive text-2xl sm:text-3xl text-pink-500 font-semibold mb-6">
+        happy birthday ♡
+      </p>
+
+      <!-- Mascot: Cute Animated Dancing Bear/Cat -->
+      <div class="relative w-28 h-28 sm:w-32 sm:h-32 mb-6">
+        <!-- SVG Mascot: Cute Chubby Bear with Sparkle Hearts -->
+        <div class="w-full h-full animate-bounce-cute flex items-center justify-center">
+          <svg viewBox="0 0 120 120" class="w-full h-full drop-shadow-md">
+            <!-- Ears -->
+            <circle cx="34" cy="36" r="14" fill="#fbcfe8" stroke="#f472b6" stroke-width="2.5"/>
+            <circle cx="34" cy="36" r="8" fill="#fda4af"/>
+            <circle cx="86" cy="36" r="14" fill="#fbcfe8" stroke="#f472b6" stroke-width="2.5"/>
+            <circle cx="86" cy="36" r="8" fill="#fda4af"/>
+            <!-- Head -->
+            <ellipse cx="60" cy="55" rx="36" ry="32" fill="#fff5f7" stroke="#f472b6" stroke-width="2.5"/>
+            <!-- Cute Blush Cheeks -->
+            <ellipse cx="38" cy="62" rx="6" ry="3.5" fill="#fca5a5" opacity="0.6"/>
+            <ellipse cx="82" cy="62" rx="6" ry="3.5" fill="#fca5a5" opacity="0.6"/>
+            <!-- Eyes (Happy Arcs) -->
+            <path d="M 44 54 Q 48 48 52 54" stroke="#4a3b32" stroke-width="3" stroke-linecap="round" fill="none"/>
+            <path d="M 68 54 Q 72 48 76 54" stroke="#4a3b32" stroke-width="3" stroke-linecap="round" fill="none"/>
+            <!-- Snout & Nose -->
+            <ellipse cx="60" cy="62" rx="9" ry="6.5" fill="#ffffff"/>
+            <ellipse cx="60" cy="59.5" rx="3.5" ry="2.5" fill="#e11d48"/>
+            <path d="M 60 62 Q 57 65 54 64" stroke="#4a3b32" stroke-width="2" stroke-linecap="round" fill="none"/>
+            <path d="M 60 62 Q 63 65 66 64" stroke="#4a3b32" stroke-width="2" stroke-linecap="round" fill="none"/>
+            <!-- Birthday Party Hat -->
+            <polygon points="60,10 49,34 71,34" fill="#f43f5e"/>
+            <polygon points="60,10 55,34 65,34" fill="#fb7185"/>
+            <circle cx="60" cy="9" r="4" fill="#fef08a"/>
+            <!-- Tiny Bowtie -->
+            <polygon points="53,88 67,88 60,83" fill="#ec4899"/>
+            <polygon points="53,88 67,88 60,93" fill="#ec4899"/>
+            <circle cx="60" cy="88" r="2.5" fill="#fb7185"/>
+            <!-- Paws Holding Mini Heart -->
+            <circle cx="42" cy="85" r="7" fill="#fff5f7" stroke="#f472b6" stroke-width="2"/>
+            <circle cx="78" cy="85" r="7" fill="#fff5f7" stroke="#f472b6" stroke-width="2"/>
+            <!-- Floating Mini Heart -->
+            <path d="M 60 76 C 58 72, 51 72, 51 78 C 51 84, 60 90, 60 90 C 60 90, 69 84, 69 78 C 69 72, 62 72, 60 76 Z" fill="#f43f5e"/>
+          </svg>
+        </div>
+        <!-- Little floating sparkles -->
+        <span class="absolute -top-1 -right-1 text-pink-400 text-lg animate-wiggle">✦</span>
+        <span class="absolute top-2 -left-3 text-pink-400 text-sm animate-wiggle" style="animation-delay: 0.5s">✨</span>
+      </div>
+
+      <!-- Centerpiece: 3D Interactive Sealed Envelope -->
+      <div class="envelope-perspective w-full max-w-sm mx-auto">
+        <div class="envelope-box w-full aspect-[16/11] flex items-center justify-center p-6 cursor-pointer group hover:shadow-glow transition-all duration-300 relative overflow-hidden" id="envelope-trigger">
+          
+          <!-- Envelope Pattern Lines -->
+          <svg class="absolute inset-0 w-full h-full pointer-events-none" preserveAspectRatio="none" viewBox="0 0 300 200">
+            <!-- Envelope bottom folds -->
+            <polygon points="0,200 150,115 300,200" fill="#fcf4f5" stroke="#fbcfe8" stroke-width="1.5"/>
+            <polygon points="0,0 150,115 0,200" fill="#fff5f6" stroke="#fce7f3" stroke-width="1.5"/>
+            <polygon points="300,0 150,115 300,200" fill="#fff5f6" stroke="#fce7f3" stroke-width="1.5"/>
+          </svg>
+
+          <!-- Envelope Top Flap (Animated) -->
+          <div id="envelope-flap" class="envelope-flap">
+            <svg class="w-full h-full drop-shadow-sm" preserveAspectRatio="none" viewBox="0 0 300 120">
+              <polygon points="0,0 300,0 150,115" fill="#fef2f4" stroke="#fbcfe8" stroke-width="1.5"/>
+            </svg>
+          </div>
+
+          <!-- Wax Seal Button (Centered) -->
+          <button id="wax-seal-btn" class="relative z-30 flex flex-col items-center justify-center active:scale-95 transition-transform duration-200 group-hover:scale-105">
+            <div class="w-16 h-16 sm:w-18 sm:h-18 rounded-full bg-gradient-to-br from-rose-500 via-rose-600 to-rose-700 shadow-wax flex items-center justify-center text-white border-2 border-rose-300/60 animate-pulse-glow">
+              <!-- Embossed Heart on Wax Seal -->
+              <svg viewBox="0 0 24 24" class="w-8 h-8 fill-rose-100 text-rose-100 drop-shadow">
+                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+              </svg>
+            </div>
+            <span class="mt-2.5 text-xs font-bold text-rose-600 uppercase tracking-widest bg-white/90 px-3 py-0.5 rounded-full shadow-xs border border-rose-100">
+              TAP TO OPEN
+            </span>
+          </button>
+
+          <!-- Little hint message below -->
+          <div class="absolute bottom-3 text-pink-400 font-handwriting text-base opacity-75">
+            a little surprise made just for you ♡
+          </div>
+        </div>
+      </div>
+
+      <p class="text-xs text-pink-400 mt-4 italic">
+        (Tap the heart wax seal to break the seal and unfold the card)
+      </p>
+    </section>
+
+
+    <!-- ========================================== -->
+    <!-- STEP 2: THE WELCOME & MINI MUSIC PLAYER    -->
+    <!-- ========================================== -->
+    <section id="step-2" class="journey-screen w-full flex flex-col items-center text-center my-auto">
+      
+      <!-- Card Container -->
+      <div class="bg-white/90 backdrop-blur-md rounded-3xl p-6 sm:p-8 border border-pink-100 shadow-card w-full max-w-md relative overflow-hidden">
+        
+        <!-- Subtle Top Ribbon -->
+        <div class="washi-tape h-4 w-28 mx-auto -mt-6 mb-4 rounded-sm"></div>
+
+        <!-- Chibi Avatar Badge -->
+        <div class="relative mx-auto w-24 h-24 mb-4">
+          <div class="w-full h-full rounded-full bg-gradient-to-tr from-pink-200 via-rose-100 to-amber-100 p-1 shadow-soft">
+            <div class="w-full h-full rounded-full bg-white flex items-center justify-center overflow-hidden border-2 border-pink-200">
+              <!-- Chibi Couple / Sweet Character Illustration -->
+              <svg viewBox="0 0 100 100" class="w-20 h-20">
+                <!-- Hair Back -->
+                <circle cx="50" cy="46" r="32" fill="#e2b17a"/>
+                <!-- Head -->
+                <circle cx="50" cy="48" r="26" fill="#ffece2"/>
+                <!-- Cute Hair Bangs -->
+                <path d="M 28 36 Q 44 48 50 40 Q 56 48 72 36 Q 66 22 50 22 Q 34 22 28 36 Z" fill="#935b3c"/>
+                <!-- Cheeks -->
+                <circle cx="37" cy="53" r="5" fill="#fca5a5" opacity="0.7"/>
+                <circle cx="63" cy="53" r="5" fill="#fca5a5" opacity="0.7"/>
+                <!-- Eyes Smiling -->
+                <path d="M 37 46 Q 41 42 45 46" stroke="#4a3b32" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+                <path d="M 55 46 Q 59 42 63 46" stroke="#4a3b32" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+                <!-- Sweet Smile -->
+                <path d="M 46 54 Q 50 58 54 54" stroke="#e11d48" stroke-width="2" stroke-linecap="round" fill="none"/>
+                <!-- Flower Hair Pin -->
+                <circle cx="67" cy="32" r="5" fill="#f43f5e"/>
+                <circle cx="67" cy="32" r="2" fill="#fef08a"/>
+                <!-- Little Blush Hearts -->
+                <path d="M 50 68 C 47 64, 40 64, 40 70 C 40 76, 50 82, 50 82 C 50 82, 60 76, 60 70 C 60 64, 53 64, 50 68 Z" fill="#fb7185"/>
+              </svg>
+            </div>
+          </div>
+          <!-- Cute pill badge on avatar -->
+          <span class="absolute -bottom-1 -right-1 bg-pink-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-xs uppercase tracking-wide border-2 border-white">
+            HEHEEE ♡
+          </span>
+        </div>
+
+        <!-- Birthday Title -->
+        <h2 class="text-2xl sm:text-3xl font-serif font-bold text-pink-700 mb-1">
+          Happy Birthday Himashi  ♡
+        </h2>
+        <p class="font-cursive text-xl text-pink-500 mb-4">
+          to the prettiest girl in the whole wide world ✨
+        </p>
+
+        <!-- Message Box with Soft Background -->
+        <div class="bg-blush-50/80 rounded-2xl p-4 sm:p-5 border border-pink-100 text-sm sm:text-base text-stone-700 leading-relaxed text-left font-sans mb-6 shadow-inner">
+          <p class="mb-2">
+            Happiest Birthday, my love! 🎂 Today is all about celebrating you—your sweet laughter, your golden heart, and every little thing that makes you so uniquely wonderful.
+          </p>
+          <p class="text-stone-600 font-handwriting text-lg leading-tight text-pink-600">
+            Thank you for bringing so much warmth and magic into my life every single day. Here’s a little keepsake journey I made for you... ♡
+          </p>
+        </div>
+
+        <!-- Mini Music Player Component -->
+        <div class="bg-gradient-to-r from-rose-50 to-pink-50 rounded-2xl p-4 border border-pink-200/70 shadow-sm text-left mb-6">
+          <div class="flex items-center gap-3.5 mb-2.5">
+            <!-- Album Art Badge -->
+            <div class="relative w-12 h-12 rounded-xl bg-gradient-to-tr from-pink-400 to-rose-500 shadow-md flex items-center justify-center text-white shrink-0 overflow-hidden group">
+              <svg id="music-vinyl-disc" viewBox="0 0 40 40" class="w-9 h-9 animate-spin-slow">
+                <circle cx="20" cy="20" r="18" fill="#1f1b24"/>
+                <circle cx="20" cy="20" r="14" fill="none" stroke="#372f3d" stroke-width="1.5"/>
+                <circle cx="20" cy="20" r="10" fill="none" stroke="#4a4052" stroke-width="1"/>
+                <circle cx="20" cy="20" r="6" fill="#f43f5e"/>
+                <circle cx="20" cy="20" r="2" fill="#fff"/>
+              </svg>
+              <div id="playing-wave-bars" class="absolute inset-0 bg-pink-900/30 backdrop-blur-[1px] hidden items-end justify-center gap-0.5 pb-2">
+                <span class="w-1 bg-white h-2 animate-bounce"></span>
+                <span class="w-1 bg-white h-4 animate-bounce" style="animation-delay: 0.15s"></span>
+                <span class="w-1 bg-white h-3 animate-bounce" style="animation-delay: 0.3s"></span>
+              </div>
+            </div>
+
+            <!-- Song Info & Caption -->
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center gap-1.5 text-xs text-pink-600 font-semibold uppercase tracking-wider">
+                <i data-lucide="sparkles" class="w-3 h-3 text-pink-500"></i>
+                <span>Our Special Melody</span>
+              </div>
+              <h3 class="font-serif font-bold text-stone-800 text-sm truncate">
+                Dedicated Song For You ♡ WITH LOVE
+              </h3>
+              <p class="text-[11px] text-pink-500/80 italic font-cursive text-xs truncate">
+                "I picked this one, because it always reminds me of you."
+              </p>
+            </div>
+
+            <!-- Play / Pause Button -->
+            <button id="main-play-btn" class="w-10 h-10 rounded-full bg-pink-500 hover:bg-pink-600 active:scale-95 text-white flex items-center justify-center shadow-md transition-all shrink-0">
+              <i data-lucide="play" id="main-play-icon" class="w-5 h-5 ml-0.5 fill-white"></i>
+            </button>
+          </div>
+
+          <!-- Time Scrubber & Timestamp -->
+          <div class="space-y-1">
+            <input id="audio-scrubber" type="range" min="0" max="100" value="0" class="w-full h-1.5 bg-pink-200/80 rounded-lg appearance-none cursor-pointer accent-pink-500">
+            <div class="flex justify-between text-[10px] text-pink-400 font-mono font-medium px-0.5">
+              <span id="audio-current-time">0:00</span>
+              <span id="audio-total-time">2:38</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- CTA Button to Move to Step 3 -->
+        <button id="to-step-3-btn" class="w-full py-3.5 px-6 rounded-full bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white font-bold text-sm sm:text-base tracking-wide shadow-soft hover:shadow-lg active:scale-[0.98] transition-all flex items-center justify-center gap-2 group">
+          <span>SEE OUR ALBUM</span>
+          <i data-lucide="arrow-right" class="w-4 h-4 group-hover:translate-x-1 transition-transform"></i>
+        </button>
+
+      </div>
+    </section>
+
+
+    <!-- ======================================================= -->
+    <!-- STEP 3: INTERACTIVE MEMORY POLAROID / CAROUSEL          -->
+    <!-- ======================================================= -->
+    <section id="step-3" class="journey-screen w-full flex flex-col items-center text-center my-auto">
+      
+      <!-- Header -->
+      <div class="mb-4">
+        <span class="inline-block bg-pink-100 text-pink-600 text-xs font-semibold px-3 py-1 rounded-full uppercase tracking-wider mb-1.5">
+          SWEET MEMORIES
+        </span>
+        <h2 class="font-serif text-2xl sm:text-3xl font-bold text-pink-700">
+          Some cool album for you ♡
+        </h2>
+        <p class="text-sm font-handwriting text-pink-500 text-lg">
+          a few of my favourite moments with you
+        </p>
+      </div>
+
+      <!-- Polaroid Container Card -->
+      <div class="relative w-full max-w-sm mx-auto mb-6">
+        
+        <!-- Washi Tape at Top Corner -->
+        <div class="washi-tape absolute -top-3 left-1/2 -translate-x-1/2 w-24 h-5 z-20 rounded-sm rotate-1"></div>
+
+        <!-- Polaroid Body -->
+        <div class="bg-white rounded-2xl p-4 sm:p-5 shadow-polaroid border border-pink-100/80 transition-all duration-300 relative overflow-hidden" id="polaroid-card">
+          
+          <!-- Top Tag & Indicator -->
+          <div class="flex justify-between items-center text-xs font-mono font-medium text-pink-400 mb-3 px-1">
+            <span id="polaroid-tag" class="bg-pink-50 text-pink-600 px-2.5 py-0.5 rounded-full text-[11px] font-semibold border border-pink-100">
+              MEMORY 01 / 03
+            </span>
+            <span class="flex items-center gap-1 font-cursive text-sm text-pink-500">
+              <i data-lucide="heart" class="w-3 h-3 fill-pink-400 text-pink-400"></i>
+              always in my heart
+            </span>
+          </div>
+
+          <!-- Photo Window with Real Photo Support & Fallback Illustrations -->
+          <div class="relative w-full aspect-square rounded-xl overflow-hidden bg-pink-50 border border-pink-100 shadow-inner group">
+            
+            <!-- Slide 1: Photo 1 (Code Configurable in slidesData) -->
+            <div id="slide-img-1" class="absolute inset-0 transition-opacity duration-500 flex flex-col items-center justify-center overflow-hidden">
+              <img id="polaroid-photo-1" src="images/photo1.jpeg" alt="Memory 1" class="w-full h-full object-cover">
+              <div id="slide-fallback-1" class="w-full h-full flex flex-col items-center justify-center p-6 bg-gradient-to-b from-pink-100 via-rose-50 to-pink-50" style="display:none;">
+                <div class="w-36 h-36 relative animate-float-gentle mb-3">
+                  <svg viewBox="0 0 100 100" class="w-full h-full drop-shadow">
+                    <circle cx="35" cy="52" r="22" fill="#fed7aa"/>
+                    <circle cx="65" cy="52" r="22" fill="#fbcfe8"/>
+                    <polygon points="20,38 28,24 36,36" fill="#fb923c"/>
+                    <polygon points="64,36 72,24 80,38" fill="#f472b6"/>
+                    <path d="M 27 50 Q 32 46 37 50" stroke="#431407" stroke-width="2" stroke-linecap="round" fill="none"/>
+                    <path d="M 63 50 Q 68 46 73 50" stroke="#431407" stroke-width="2" stroke-linecap="round" fill="none"/>
+                    <ellipse cx="49" cy="55" rx="3" ry="2" fill="#f43f5e"/>
+                    <ellipse cx="51" cy="55" rx="3" ry="2" fill="#f43f5e"/>
+                    <path d="M 50 30 C 47 26, 42 26, 42 31 C 42 36, 50 41, 50 41 C 50 41, 58 36, 58 31 C 58 26, 53 26, 50 30 Z" fill="#f43f5e"/>
+                  </svg>
+                </div>
+                <div class="bg-white/80 backdrop-blur-xs px-3 py-1 rounded-full text-xs font-bold text-pink-600 shadow-2xs border border-pink-200">
+                  Us whenever we're together 🥰
+                </div>
+              </div>
+            </div>
+
+            <!-- Slide 2: Photo 2 (Code Configurable in slidesData) -->
+            <div id="slide-img-2" class="absolute inset-0 transition-opacity duration-500 opacity-0 flex flex-col items-center justify-center overflow-hidden">
+              <img id="polaroid-photo-2" src="images/photo2.jpeg" alt="Memory 2" class="w-full h-full object-cover">
+              <div id="slide-fallback-2" class="w-full h-full flex flex-col items-center justify-center p-6 bg-gradient-to-b from-amber-50 via-pink-50 to-rose-100" style="display:none;">
+                <div class="w-36 h-36 relative animate-float-gentle mb-3">
+                  <svg viewBox="0 0 100 100" class="w-full h-full drop-shadow">
+                    <rect x="22" y="60" width="56" height="26" rx="6" fill="#fbcfe8" stroke="#f472b6" stroke-width="2"/>
+                    <path d="M 22 66 Q 28 72 34 66 Q 40 72 46 66 Q 52 72 58 66 Q 64 72 70 66 Q 76 72 78 66" stroke="#fff" stroke-width="3" fill="none"/>
+                    <rect x="30" y="44" width="40" height="18" rx="5" fill="#fde68a" stroke="#f59e0b" stroke-width="1.5"/>
+                    <line x1="42" y1="44" x2="42" y2="34" stroke="#ec4899" stroke-width="2"/>
+                    <circle cx="42" cy="30" r="3" fill="#f59e0b"/>
+                    <line x1="58" y1="44" x2="58" y2="34" stroke="#3b82f6" stroke-width="2"/>
+                    <circle cx="58" cy="30" r="3" fill="#f59e0b"/>
+                    <circle cx="36" cy="44" r="3" fill="#ef4444"/>
+                    <circle cx="50" cy="44" r="3" fill="#ef4444"/>
+                    <circle cx="64" cy="44" r="3" fill="#ef4444"/>
+                  </svg>
+                </div>
+                <div class="bg-white/80 backdrop-blur-xs px-3 py-1 rounded-full text-xs font-bold text-amber-700 shadow-2xs border border-amber-200">
+                  May all your sweetest wishes come true! 🎂
+                </div>
+              </div>
+            </div>
+
+            <!-- Slide 3: Photo 3 (Code Configurable in slidesData) -->
+            <div id="slide-img-3" class="absolute inset-0 transition-opacity duration-500 opacity-0 flex flex-col items-center justify-center overflow-hidden">
+              <img id="polaroid-photo-3" src="images/photo3.jpeg" alt="Memory 3" class="w-full h-full object-cover">
+              <div id="slide-fallback-3" class="w-full h-full flex flex-col items-center justify-center p-6 bg-gradient-to-b from-rose-100 via-pink-100 to-purple-50" style="display:none;">
+                <div class="w-36 h-36 relative animate-wiggle mb-3">
+                  <svg viewBox="0 0 100 100" class="w-full h-full drop-shadow">
+                    <ellipse cx="50" cy="55" rx="30" ry="26" fill="#e0e7ff"/>
+                    <circle cx="40" cy="50" r="3.5" fill="#1e1b4b"/>
+                    <circle cx="60" cy="50" r="3.5" fill="#1e1b4b"/>
+                    <circle cx="39" cy="48.5" r="1" fill="#fff"/>
+                    <circle cx="59" cy="48.5" r="1" fill="#fff"/>
+                    <polygon points="50,53 45,58 55,58" fill="#f97316"/>
+                    <path d="M 50 62 C 46 56, 38 56, 38 64 C 38 72, 50 79, 50 79 C 50 79, 62 72, 62 64 C 62 56, 54 56, 50 62 Z" fill="#ec4899"/>
+                  </svg>
+                </div>
+                <div class="bg-white/80 backdrop-blur-xs px-3 py-1 rounded-full text-xs font-bold text-purple-700 shadow-2xs border border-purple-200">
+                  You when you get your favourite snacks 🍕
+                </div>
+              </div>
+            </div>
+
+            <!-- Navigation Arrow Overlays -->
+            <button id="carousel-prev-btn" class="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white/80 hover:bg-white text-pink-600 shadow-md flex items-center justify-center active:scale-90 transition-all z-10">
+              <i data-lucide="chevron-left" class="w-5 h-5"></i>
+            </button>
+            <button id="carousel-next-btn" class="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white/80 hover:bg-white text-pink-600 shadow-md flex items-center justify-center active:scale-90 transition-all z-10">
+              <i data-lucide="chevron-right" class="w-5 h-5"></i>
+            </button>
+          </div>
+
+          <!-- Polaroid Handwritten Caption -->
+          <div class="mt-4 pt-2 text-center border-t border-pink-50">
+            <p id="polaroid-caption" class="font-handwriting text-2xl sm:text-3xl text-pink-700 leading-tight">
+              "The day we couldn't stop laughing at the silly jokes"
+            </p>
+            <p id="polaroid-subcaption" class="text-xs text-stone-500 mt-1 font-sans">
+              (Swipe or use arrows to flip through our memories)
+            </p>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Button at Bottom: Move to Step 4 -->
+      <button id="to-step-4-btn" class="w-full max-w-sm py-3.5 px-6 rounded-full bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white font-bold text-sm sm:text-base tracking-wide shadow-soft active:scale-95 transition-all flex items-center justify-center gap-2 group">
+        <span>PICK A WISH</span>
+        <i data-lucide="flower-2" class="w-4 h-4 group-hover:rotate-12 transition-transform"></i>
+      </button>
+
+    </section>
+
+
+    <!-- ================================================================ -->
+    <!-- STEP 4: "A TINY BOUQUET OF BIRTHDAY WISHES" (FLOWER CARDS)       -->
+    <!-- ================================================================ -->
+    <section id="step-4" class="journey-screen w-full flex flex-col items-center text-center my-auto">
+      
+      <!-- Header -->
+      <div class="mb-5 max-w-md">
+        <span class="inline-block bg-rose-100 text-rose-600 text-xs font-semibold px-3 py-1 rounded-full uppercase tracking-wider mb-1.5">
+          INTERACTIVE BOUQUET
+        </span>
+        <h2 class="font-serif text-2xl sm:text-3xl font-bold text-pink-700 leading-tight">
+          A Tiny Bouquet of Birthday Wishes ♡
+        </h2>
+        <p class="text-xs sm:text-sm font-handwriting text-pink-500 text-lg mt-0.5">
+          pick each flower, there's a little wish inside for you
+        </p>
+      </div>
+
+      <!-- 3 Flower Cards Grid -->
+      <div class="grid grid-cols-3 gap-2.5 sm:gap-4 w-full max-w-md mb-4">
+        
+        <!-- Flower Card 1 (Rose) -->
+        <div class="flower-card h-48 sm:h-56 cursor-pointer perspective" data-card-id="1">
+          <div class="flower-card-inner relative w-full h-full rounded-2xl shadow-card transition-all duration-500">
+            
+            <!-- Front Face: Closed / Pick Me -->
+            <div class="flower-card-front absolute inset-0 bg-white/95 rounded-2xl border-2 border-pink-200 p-3 flex flex-col items-center justify-between hover:border-pink-400 transition-colors">
+              <span class="washi-tape h-2 w-10 rounded-xs"></span>
+              <div class="flex flex-col items-center animate-bounce-cute">
+                <!-- Tulip / Rose SVG Icon -->
+                <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-rose-50 flex items-center justify-center mb-1">
+                  <svg viewBox="0 0 40 40" class="w-8 h-8">
+                    <path d="M 20 28 C 16 28 12 22 12 16 C 12 11 16 8 20 12 C 24 8 28 11 28 16 C 28 22 24 28 20 28 Z" fill="#f43f5e"/>
+                    <line x1="20" y1="28" x2="20" y2="38" stroke="#10b981" stroke-width="2.5" stroke-linecap="round"/>
+                    <path d="M 20 33 Q 26 31 25 28" stroke="#10b981" stroke-width="2" fill="none" stroke-linecap="round"/>
+                  </svg>
+                </div>
+                <span class="text-xs font-bold text-rose-600 uppercase tracking-wider">ROSE</span>
+              </div>
+              <div class="bg-rose-50 text-rose-600 text-[10px] font-bold px-2 py-0.5 rounded-full border border-rose-200">
+                PICK ME ✨
+              </div>
+            </div>
+
+            <!-- Back Face: Revealed Secret Wish -->
+            <div class="flower-card-back absolute inset-0 bg-gradient-to-br from-rose-50 to-pink-100 rounded-2xl border-2 border-rose-300 p-3.5 flex flex-col items-center justify-center text-center shadow-inner">
+              <i data-lucide="sparkles" class="w-4 h-4 text-rose-500 mb-1"></i>
+              <h4 class="font-serif font-bold text-rose-700 text-xs sm:text-sm">Wish #1: Joy</h4>
+              <p class="font-handwriting text-stone-700 text-base sm:text-lg leading-tight mt-1">
+                "May your smile never fade and every day bring pure sunshine to your heart!"
+              </p>
+              <span class="text-[10px] font-bold text-rose-500 mt-2 bg-white/70 px-2 py-0.5 rounded-full">
+                UNLOCKED ♡
+              </span>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Flower Card 2 (Daisy) -->
+        <div class="flower-card h-48 sm:h-56 cursor-pointer perspective" data-card-id="2">
+          <div class="flower-card-inner relative w-full h-full rounded-2xl shadow-card transition-all duration-500">
+            
+            <!-- Front Face: Closed / Pick Me -->
+            <div class="flower-card-front absolute inset-0 bg-white/95 rounded-2xl border-2 border-amber-200 p-3 flex flex-col items-center justify-between hover:border-amber-400 transition-colors">
+              <span class="washi-tape h-2 w-10 rounded-xs bg-amber-100"></span>
+              <div class="flex flex-col items-center animate-bounce-cute" style="animation-delay: 0.2s">
+                <!-- Daisy SVG Icon -->
+                <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-amber-50 flex items-center justify-center mb-1">
+                  <svg viewBox="0 0 40 40" class="w-8 h-8">
+                    <!-- Daisy Petals -->
+                    <circle cx="20" cy="14" r="4.5" fill="#fef08a"/>
+                    <circle cx="20" cy="26" r="4.5" fill="#fef08a"/>
+                    <circle cx="14" cy="20" r="4.5" fill="#fef08a"/>
+                    <circle cx="26" cy="20" r="4.5" fill="#fef08a"/>
+                    <circle cx="16" cy="16" r="4" fill="#fef08a"/>
+                    <circle cx="24" cy="16" r="4" fill="#fef08a"/>
+                    <circle cx="16" cy="24" r="4" fill="#fef08a"/>
+                    <circle cx="24" cy="24" r="4" fill="#fef08a"/>
+                    <!-- Daisy Center -->
+                    <circle cx="20" cy="20" r="5" fill="#f59e0b"/>
+                    <!-- Stem -->
+                    <line x1="20" y1="26" x2="20" y2="38" stroke="#10b981" stroke-width="2.5" stroke-linecap="round"/>
+                  </svg>
+                </div>
+                <span class="text-xs font-bold text-amber-700 uppercase tracking-wider">DAISY</span>
+              </div>
+              <div class="bg-amber-50 text-amber-700 text-[10px] font-bold px-2 py-0.5 rounded-full border border-amber-200">
+                PICK ME ✨
+              </div>
+            </div>
+
+            <!-- Back Face: Revealed Secret Wish -->
+            <div class="flower-card-back absolute inset-0 bg-gradient-to-br from-amber-50 to-orange-100 rounded-2xl border-2 border-amber-300 p-3.5 flex flex-col items-center justify-center text-center shadow-inner">
+              <i data-lucide="sun" class="w-4 h-4 text-amber-600 mb-1"></i>
+              <h4 class="font-serif font-bold text-amber-800 text-xs sm:text-sm">Wish #2: Dreams</h4>
+              <p class="font-handwriting text-stone-700 text-base sm:text-lg leading-tight mt-1">
+                "May every little dream and secret goal you hold in your mind come true this year!"
+              </p>
+              <span class="text-[10px] font-bold text-amber-600 mt-2 bg-white/70 px-2 py-0.5 rounded-full">
+                UNLOCKED ♡
+              </span>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Flower Card 3 (Cherry Blossom / Lily) -->
+        <div class="flower-card h-48 sm:h-56 cursor-pointer perspective" data-card-id="3">
+          <div class="flower-card-inner relative w-full h-full rounded-2xl shadow-card transition-all duration-500">
+            
+            <!-- Front Face: Closed / Pick Me -->
+            <div class="flower-card-front absolute inset-0 bg-white/95 rounded-2xl border-2 border-pink-200 p-3 flex flex-col items-center justify-between hover:border-pink-400 transition-colors">
+              <span class="washi-tape h-2 w-10 rounded-xs"></span>
+              <div class="flex flex-col items-center animate-bounce-cute" style="animation-delay: 0.4s">
+                <!-- Blossom SVG Icon -->
+                <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-pink-50 flex items-center justify-center mb-1">
+                  <svg viewBox="0 0 40 40" class="w-8 h-8">
+                    <circle cx="20" cy="13" r="5" fill="#fbcfe8"/>
+                    <circle cx="14" cy="18" r="5" fill="#fbcfe8"/>
+                    <circle cx="26" cy="18" r="5" fill="#fbcfe8"/>
+                    <circle cx="16" cy="25" r="5" fill="#fbcfe8"/>
+                    <circle cx="24" cy="25" r="5" fill="#fbcfe8"/>
+                    <circle cx="20" cy="20" r="4" fill="#fda4af"/>
+                    <!-- Stem -->
+                    <line x1="20" y1="25" x2="20" y2="38" stroke="#10b981" stroke-width="2.5" stroke-linecap="round"/>
+                  </svg>
+                </div>
+                <span class="text-xs font-bold text-pink-600 uppercase tracking-wider">BLOSSOM</span>
+              </div>
+              <div class="bg-pink-50 text-pink-600 text-[10px] font-bold px-2 py-0.5 rounded-full border border-pink-200">
+                PICK ME ✨
+              </div>
+            </div>
+
+            <!-- Back Face: Revealed Secret Wish -->
+            <div class="flower-card-back absolute inset-0 bg-gradient-to-br from-pink-50 to-purple-100 rounded-2xl border-2 border-pink-300 p-3.5 flex flex-col items-center justify-center text-center shadow-inner">
+              <i data-lucide="heart" class="w-4 h-4 fill-pink-500 text-pink-500 mb-1"></i>
+              <h4 class="font-serif font-bold text-pink-700 text-xs sm:text-sm">Wish #3: Us</h4>
+              <p class="font-handwriting text-stone-700 text-base sm:text-lg leading-tight mt-1">
+                "Here's to endless more memories, silly laughs, and holding your hand forever!"
+              </p>
+              <span class="text-[10px] font-bold text-pink-500 mt-2 bg-white/70 px-2 py-0.5 rounded-full">
+                UNLOCKED ♡
+              </span>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Illustrated Ceramic Vase / Flower Pot at Base -->
+      <div class="relative w-28 h-14 -mt-2 mb-6">
+        <svg viewBox="0 0 100 50" class="w-full h-full drop-shadow-sm">
+          <ellipse cx="50" cy="8" rx="28" ry="6" fill="#fed7aa"/>
+          <path d="M 22 8 Q 28 45 40 48 Q 50 49 60 48 Q 72 45 78 8 Z" fill="#ffedd5" stroke="#fed7aa" stroke-width="2"/>
+          <!-- Little Heart doodle on the pot -->
+          <path d="M 50 24 C 48 20, 42 20, 42 26 C 42 32, 50 36, 50 36 C 50 36, 58 32, 58 26 C 58 20, 52 20, 50 24 Z" fill="#fb7185"/>
+        </svg>
+      </div>
+
+      <!-- Progress Pill Counter -->
+      <p id="flowers-progress-hint" class="text-xs text-pink-500 font-semibold mb-4 bg-pink-50 px-3 py-1 rounded-full border border-pink-200">
+        <span id="flowers-picked-count">0</span> of 3 flowers picked ✨
+      </p>
+
+      <!-- Appears when all 3 flowers are unlocked -->
+      <button id="to-step-5-btn" class="w-full max-w-sm py-3.5 px-6 rounded-full bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white font-bold text-sm sm:text-base tracking-wide shadow-soft active:scale-95 transition-all hidden items-center justify-center gap-2 group animate-pulse-glow">
+        <span>READ MY LETTER</span>
+        <i data-lucide="mail-open" class="w-4 h-4 group-hover:scale-110 transition-transform"></i>
+      </button>
+
+    </section>
+
+
+    <!-- ======================================================= -->
+    <!-- STEP 5: THE FINAL BIRTHDAY LETTER                       -->
+    <!-- ======================================================= -->
+    <section id="step-5" class="journey-screen w-full flex flex-col items-center text-center my-auto pb-10">
+      
+      <!-- Letter Card Container -->
+      <div class="bg-[#fffdfa] rounded-3xl p-6 sm:p-8 border-2 border-pink-200/90 shadow-card w-full max-w-lg relative overflow-hidden text-left">
+        
+        <!-- Washi Tape Decor Top Center -->
+        <div class="washi-tape h-4 w-32 mx-auto -mt-6 mb-5 rounded-sm"></div>
+
+        <!-- Cute Header Tag -->
+        <div class="text-center mb-4">
+          <span class="inline-flex items-center gap-1.5 bg-rose-50 text-rose-600 border border-rose-200 px-3.5 py-1 rounded-full text-[11px] font-bold tracking-wider uppercase shadow-2xs">
+            <i data-lucide="heart" class="w-3 h-3 fill-rose-500 text-rose-500"></i>
+            <span>A BIRTHDAY LETTER — JUST FOR YOU ♡</span>
+          </span>
+        </div>
+
+        <!-- Chibi Mascot Avatar at Top of Letter -->
+        <div class="flex items-center gap-3 mb-5 pb-3 border-b border-pink-100">
+          <div class="w-12 h-12 rounded-full bg-pink-100 border border-pink-300 flex items-center justify-center overflow-hidden shrink-0">
+            <svg viewBox="0 0 60 60" class="w-10 h-10">
+              <circle cx="30" cy="30" r="22" fill="#ffe4e6"/>
+              <circle cx="23" cy="27" r="2.5" fill="#3f3f46"/>
+              <circle cx="37" cy="27" r="2.5" fill="#3f3f46"/>
+              <circle cx="19" cy="32" r="3" fill="#f43f5e" opacity="0.6"/>
+              <circle cx="41" cy="32" r="3" fill="#f43f5e" opacity="0.6"/>
+              <path d="M 27 34 Q 30 38 33 34" stroke="#e11d48" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+              <polygon points="30,8 24,18 36,18" fill="#f43f5e"/>
+            </svg>
+          </div>
+          <div>
+            <h3 class="font-serif text-xl sm:text-2xl font-bold text-pink-800 leading-none">
+              Himaa♡
+            </h3>
+            <p class="font-cursive text-sm text-pink-500">
+              With all my love, always and forever
+            </p>
+          </div>
+        </div>
+
+        <!-- Heartfelt Letter Content -->
+        <div class="space-y-4 text-stone-700 text-sm sm:text-base leading-relaxed font-sans">
+          <p>
+            Happy Birthday to the most precious person in my world! 🌸
+          </p>
+          <p>
+            I wanted to create something special for you today, something that lasts longer than a card and captures just a tiny fraction of how much you mean to me. Every moment with you—from our endless late-night chats, our silly banter, to the quiet moments where just being near you makes everything okay—is my favorite thing.
+          </p>
+          <p>
+            You have this effortless way of lighting up every room you walk into and making everyone around you feel cherished. Thank you for your warmth, your kindness, your cute little habits, and for simply being you.
+          </p>
+          <p class="font-handwriting text-xl text-pink-700 bg-pink-50/70 p-3.5 rounded-2xl border border-pink-100">
+            "No matter how many birthdays come and go, you will always be my favorite adventure, my happiest thought, and my cutiee forever."
+          </p>
+          <p>
+            May this upcoming year be overflowing with laughter, dream vacations, your favorite food, good health, and all the happiness you so deeply deserve.
+          </p>
+        </div>
+
+        <!-- Signature -->
+        <div class="mt-6 pt-4 border-t border-pink-100 flex justify-between items-end">
+          <div>
+            <p class="text-xs text-stone-400 uppercase tracking-widest font-mono">FOREVER YOURS,</p>
+            <p class="font-cursive text-2xl text-pink-600 font-bold">Your Biggest Fan ♡</p>
+          </div>
+          <div class="w-10 h-10 rounded-full bg-rose-50 border border-rose-200 flex items-center justify-center text-rose-500 shadow-2xs">
+            <i data-lucide="stamp" class="w-5 h-5"></i>
+          </div>
+        </div>
+
+        <!-- Floating Hearts Celebration Action Button -->
+        <div class="mt-7 text-center">
+          <button id="final-celebrate-btn" class="w-full py-4 px-6 rounded-full bg-gradient-to-r from-rose-500 via-pink-500 to-rose-500 hover:from-rose-600 hover:to-pink-600 text-white font-bold text-base tracking-wide shadow-glow active:scale-95 transition-all flex items-center justify-center gap-2 group">
+            <i data-lucide="sparkles" class="w-5 h-5 group-hover:rotate-45 transition-transform"></i>
+            <span>CLICK FOR BIRTHDAY RAIN & CELEBRATION! 🎉</span>
+            <i data-lucide="heart" class="w-5 h-5 fill-white text-white group-hover:scale-125 transition-transform"></i>
+          </button>
+        </div>
+
+      </div>
+
+      <!-- Restart Journey Subtle Link -->
+      <button id="restart-journey-btn" class="mt-6 text-xs text-pink-400 hover:text-pink-600 underline font-medium tracking-wide">
+        ← Start the journey from the beginning
+      </button>
+
+    </section>
+
+  </main>
+
+  <!-- HTML5 Audio Element for Background Music (Soothing Romantic Lo-Fi Acoustic Piano Track) -->
+  <audio id="bg-audio" preload="auto" loop>
+    <!-- Royalty-free soothing romantic acoustic piano track -->
+    <source src="https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3?filename=romantic-piano-112199.mp3" type="audio/mpeg">
+    <source src="https://assets.mixkit.co/music/preview/mixkit-romantic-moment-1111.mp3" type="audio/mpeg">
+  </audio>
+
+  <!-- JavaScript Logic -->
+  <script>
+    // Initialize Lucide Icons
+    lucide.createIcons();
+
+    // ==========================================
+    // WEB AUDIO API SOUND EFFECTS & SYNTHESIZER
+    // ==========================================
+    // Web Audio synthesizer guarantees sounds work immediately without external audio lag or 404s
+    class SoundEngine {
+      constructor() {
+        this.ctx = null;
+        this.enabled = true;
+      }
+
+      init() {
+        if (!this.ctx) {
+          const AudioContext = window.AudioContext || window.webkitAudioContext;
+          if (AudioContext) {
+            this.ctx = new AudioContext();
+          }
+        }
+        if (this.ctx && this.ctx.state === 'suspended') {
+          this.ctx.resume();
+        }
+      }
+
+      // Soft Bubble / Click Pop Sound
+      playPop() {
+        if (!this.enabled) return;
+        this.init();
+        if (!this.ctx) return;
+
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sine';
+        
+        const now = this.ctx.currentTime;
+        osc.frequency.setValueAtTime(580, now);
+        osc.frequency.exponentialRampToValueAtTime(260, now + 0.08);
+
+        gain.gain.setValueAtTime(0.2, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
+
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+
+        osc.start(now);
+        osc.stop(now + 0.09);
+      }
+
+      // Magical Sparkle Chime (pentatonic harmony)
+      playSparkle() {
+        if (!this.enabled) return;
+        this.init();
+        if (!this.ctx) return;
+
+        const notes = [1046.50, 1318.51, 1567.98, 2093.00]; // C6, E6, G6, C7
+        notes.forEach((freq, index) => {
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = 'sine';
+
+          const noteTime = this.ctx.currentTime + (index * 0.07);
+          osc.frequency.setValueAtTime(freq, noteTime);
+
+          gain.gain.setValueAtTime(0, noteTime);
+          gain.gain.linearRampToValueAtTime(0.15, noteTime + 0.02);
+          gain.gain.exponentialRampToValueAtTime(0.001, noteTime + 0.35);
+
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+
+          osc.start(noteTime);
+          osc.stop(noteTime + 0.38);
+        });
+      }
+
+      // Paper / Envelope Opening Swoosh
+      playEnvelopeUnseal() {
+        if (!this.enabled) return;
+        this.init();
+        if (!this.ctx) return;
+
+        // Multi-frequency warm chime
+        const notes = [523.25, 659.25, 783.99, 1046.50];
+        notes.forEach((freq, i) => {
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = 'triangle';
+
+          const time = this.ctx.currentTime + (i * 0.09);
+          osc.frequency.setValueAtTime(freq, time);
+
+          gain.gain.setValueAtTime(0.01, time);
+          gain.gain.linearRampToValueAtTime(0.18, time + 0.03);
+          gain.gain.exponentialRampToValueAtTime(0.001, time + 0.4);
+
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+
+          osc.start(time);
+          osc.stop(time + 0.42);
+        });
+      }
+
+      // Flower Card Flip Ding
+      playFlip() {
+        if (!this.enabled) return;
+        this.init();
+        if (!this.ctx) return;
+
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sine';
+
+        const now = this.ctx.currentTime;
+        osc.frequency.setValueAtTime(880, now); // A5
+        osc.frequency.exponentialRampToValueAtTime(1174.66, now + 0.12); // D6
+
+        gain.gain.setValueAtTime(0.16, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.25);
+
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+
+        osc.start(now);
+        osc.stop(now + 0.26);
+      }
+    }
+
+    const sound = new SoundEngine();
+
+    // ==========================================
+    // FLOATING PETALS & SPARKLES CANVAS
+    // ==========================================
+    const canvas = document.getElementById('petals-canvas');
+    const ctx = canvas.getContext('2d');
+    let petals = [];
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    class Petal {
+      constructor() {
+        this.reset();
+      }
+      reset() {
+        this.x = Math.random() * canvas.width;
+        this.y = Math.random() * -100;
+        this.size = Math.random() * 8 + 6;
+        this.speedY = Math.random() * 1.2 + 0.6;
+        this.speedX = Math.sin(Math.random() * 2) * 0.8;
+        this.rotation = Math.random() * 360;
+        this.rotSpeed = (Math.random() - 0.5) * 1.5;
+        this.opacity = Math.random() * 0.45 + 0.35;
+        this.color = Math.random() > 0.4 ? '#fbcfe8' : '#fda4af';
+        this.isSparkle = Math.random() > 0.75;
+      }
+      update() {
+        this.y += this.speedY;
+        this.x += Math.sin(this.y * 0.015) * 0.8;
+        this.rotation += this.rotSpeed;
+
+        if (this.y > canvas.height + 20) {
+          this.reset();
+        }
+      }
+      draw() {
+        ctx.save();
+        ctx.translate(this.x, this.y);
+        ctx.rotate((this.rotation * Math.PI) / 180);
+        ctx.globalAlpha = this.opacity;
+
+        if (this.isSparkle) {
+          // Sparkle 4-point star
+          ctx.fillStyle = '#fde047';
+          ctx.beginPath();
+          ctx.arc(0, 0, this.size * 0.25, 0, Math.PI * 2);
+          ctx.fill();
+        } else {
+          // Cherry blossom petal
+          ctx.fillStyle = this.color;
+          ctx.beginPath();
+          ctx.moveTo(0, 0);
+          ctx.bezierCurveTo(-this.size / 2, -this.size / 2, -this.size, this.size / 3, 0, this.size);
+          ctx.bezierCurveTo(this.size, this.size / 3, this.size / 2, -this.size / 2, 0, 0);
+          ctx.fill();
+        }
+        ctx.restore();
+      }
+    }
+
+    for (let i = 0; i < 35; i++) {
+      const p = new Petal();
+      p.y = Math.random() * window.innerHeight; // initial distribution
+      petals.push(p);
+    }
+
+    function animatePetals() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      petals.forEach(p => {
+        p.update();
+        p.draw();
+      });
+      requestAnimationFrame(animatePetals);
+    }
+    animatePetals();
+
+    // Click anywhere to spawn floating mini-hearts
+    window.addEventListener('click', (e) => {
+      // Don't trigger if clicking buttons directly
+      const heart = document.createElement('div');
+      heart.className = 'click-heart';
+      heart.innerHTML = ['♡', '✨', '💖', '🌸'][Math.floor(Math.random() * 4)];
+      heart.style.left = e.clientX + 'px';
+      heart.style.top = e.clientY + 'px';
+      heart.style.color = '#f472b6';
+      heart.style.fontSize = (Math.random() * 12 + 18) + 'px';
+      document.body.appendChild(heart);
+      setTimeout(() => heart.remove(), 900);
+    });
+
+    // ==========================================
+    // AUDIO PLAYER & MUSIC CONTROL
+    // ==========================================
+    const bgAudio = document.getElementById('bg-audio');
+    const mainPlayBtn = document.getElementById('main-play-btn');
+    const mainPlayIcon = document.getElementById('main-play-icon');
+    const quickMusicToggle = document.getElementById('quick-music-toggle');
+    const quickMusicIcon = document.getElementById('quick-music-icon');
+    const scrubber = document.getElementById('audio-scrubber');
+    const currentTimeLabel = document.getElementById('audio-current-time');
+    const totalTimeLabel = document.getElementById('audio-total-time');
+    const playingWaveBars = document.getElementById('playing-wave-bars');
+    const vinylDisc = document.getElementById('music-vinyl-disc');
+
+    let isPlaying = false;
+
+    function toggleAudio() {
+      sound.init();
+      if (isPlaying) {
+        bgAudio.pause();
+        isPlaying = false;
+        updateAudioUI(false);
+      } else {
+        bgAudio.play().then(() => {
+          isPlaying = true;
+          updateAudioUI(true);
+        }).catch(err => {
+          console.log("Audio autoplay prevented by browser policy:", err);
+        });
+      }
+    }
+
+    function updateAudioUI(playing) {
+      if (playing) {
+        mainPlayIcon.setAttribute('data-lucide', 'pause');
+        quickMusicIcon.classList.add('animate-spin');
+        playingWaveBars.classList.remove('hidden');
+        playingWaveBars.classList.add('flex');
+        vinylDisc.classList.add('animate-spin');
+      } else {
+        mainPlayIcon.setAttribute('data-lucide', 'play');
+        quickMusicIcon.classList.remove('animate-spin');
+        playingWaveBars.classList.remove('flex');
+        playingWaveBars.classList.add('hidden');
+        vinylDisc.classList.remove('animate-spin');
+      }
+      lucide.createIcons();
+    }
+
+    mainPlayBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      sound.playPop();
+      toggleAudio();
+    });
+
+    quickMusicToggle.addEventListener('click', (e) => {
+      e.stopPropagation();
+      sound.playPop();
+      toggleAudio();
+    });
+
+    // Sound effects toggle button
+    const soundToggle = document.getElementById('sound-effects-toggle');
+    const soundStatusText = document.getElementById('sound-status-text');
+    soundToggle.addEventListener('click', () => {
+      sound.enabled = !sound.enabled;
+      soundStatusText.textContent = sound.enabled ? 'Sound ON' : 'Sound OFF';
+      soundToggle.classList.toggle('text-pink-600', sound.enabled);
+      soundToggle.classList.toggle('text-stone-400', !sound.enabled);
+      if (sound.enabled) sound.playPop();
+    });
+
+    // Scrubber update
+    bgAudio.addEventListener('timeupdate', () => {
+      if (bgAudio.duration) {
+        const percent = (bgAudio.currentTime / bgAudio.duration) * 100;
+        scrubber.value = percent;
+        currentTimeLabel.textContent = formatTime(bgAudio.currentTime);
+        totalTimeLabel.textContent = formatTime(bgAudio.duration);
+      }
+    });
+
+    scrubber.addEventListener('input', () => {
+      if (bgAudio.duration) {
+        bgAudio.currentTime = (scrubber.value / 100) * bgAudio.duration;
+      }
+    });
+
+    function formatTime(sec) {
+      const m = Math.floor(sec / 60);
+      const s = Math.floor(sec % 60);
+      return `${m}:${s < 10 ? '0' : ''}${s}`;
+    }
+
+    // ==========================================
+    // MULTI-STEP NAVIGATION LOGIC
+    // ==========================================
+    let currentStep = 1;
+
+    function goToStep(stepNum) {
+      if (stepNum === currentStep) return;
+      sound.playSparkle();
+
+      // Screen transitions
+      const currentEl = document.getElementById(`step-${currentStep}`);
+      const nextEl = document.getElementById(`step-${stepNum}`);
+
+      currentEl.classList.remove('active');
+      setTimeout(() => {
+        nextEl.classList.add('active');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }, 300);
+
+      // Update progress indicators
+      for (let i = 1; i <= 5; i++) {
+        const dot = document.getElementById(`dot-${i}`);
+        if (i === stepNum) {
+          dot.className = 'w-3.5 h-2.5 rounded-full bg-pink-500 shadow-sm transition-all duration-300';
+        } else if (i < stepNum) {
+          dot.className = 'w-2 h-2 rounded-full bg-rose-400 transition-all duration-300';
+        } else {
+          dot.className = 'w-2 h-2 rounded-full bg-pink-200 transition-all duration-300';
+        }
+      }
+
+      currentStep = stepNum;
+
+      // Celebrate when reaching step 5
+      if (stepNum === 5) {
+        triggerConfetti(0.4);
+      }
+    }
+
+    // ==========================================
+    // STEP 1: ENVELOPE OPENING INTERACTION
+    // ==========================================
+    const waxSealBtn = document.getElementById('wax-seal-btn');
+    const envelopeFlap = document.getElementById('envelope-flap');
+    const envelopeTrigger = document.getElementById('envelope-trigger');
+
+    function openEnvelope() {
+      sound.playEnvelopeUnseal();
+      envelopeFlap.classList.add('open');
+      waxSealBtn.classList.add('scale-125', 'opacity-0');
+
+      // Light confetti pop on envelope unseal
+      confetti({
+        particleCount: 35,
+        spread: 60,
+        origin: { y: 0.6 },
+        colors: ['#fda4af', '#f43f5e', '#fed7aa', '#fbcfe8']
+      });
+
+      // Also gently start background music on envelope opening
+      if (!isPlaying) {
+        bgAudio.play().then(() => {
+          isPlaying = true;
+          updateAudioUI(true);
+        }).catch(() => {});
+      }
+
+      // Smooth delay before transitioning to Step 2
+      setTimeout(() => {
+        goToStep(2);
+      }, 950);
+    }
+
+    waxSealBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      openEnvelope();
+    });
+    envelopeTrigger.addEventListener('click', openEnvelope);
+
+    // ==========================================
+    // STEP 2: NEXT BUTTON
+    // ==========================================
+    document.getElementById('to-step-3-btn').addEventListener('click', () => {
+      sound.playPop();
+      goToStep(3);
+    });
+
+    // ==========================================
+    // STEP 3: POLAROID CAROUSEL
+    // ==========================================
+    // STEP 3: POLAROID CAROUSEL & PHOTO ALBUM
+    // ==========================================
+    let currentSlide = 1;
+    const totalSlides = 3;
+
+    // ✨ CUSTOMIZE HER PHOTOS & MEMORIES HERE IN CODE!
+    // Set 'photo' to:
+    //  - A local path: 'images/photo2.jpeg'
+    //  - Or any image URL: 'https://example.com/her-photo.jpg'
+    const slidesData = [
+      {
+        tag: 'MEMORY 01 / 03',
+        photo: 'images/photo1.jpeg', // If photo1 isn't added yet, it shows the cute cartoon drawing
+        caption: '"The day we couldn\'t stop laughing at the silly jokes"',
+        sub: 'Every little smile of yours brightens my whole world ♡'
+      },
+      {
+        tag: 'MEMORY 02 / 03',
+        photo: 'images/photo2.jpeg', // Your first photo!
+        caption: '"Making wishes together & celebrating YOU"',
+        sub: 'I hope every dream you hold close comes true this year! 🎂'
+      },
+      {
+        tag: 'MEMORY 03 / 03',
+        photo: 'images/photo3.jpeg', // Your second photo!
+        caption: '"You when you get your favourite snacks 🍕"',
+        sub: 'My adorable, hungry little cutiee who always steals my fries ♡'
+      }
+    ];
+
+    // Smart photo loader: guarantees image display with multiple fallbacks
+    function initAlbumPhotos() {
+      slidesData.forEach((item, idx) => {
+        const slideIndex = idx + 1;
+        const img = document.getElementById(`polaroid-photo-${slideIndex}`);
+        const fallback = document.getElementById(`slide-fallback-${slideIndex}`);
+        if (!img) return;
+
+        // If the browser already loaded the image natively, display it immediately!
+        if (img.complete && img.naturalWidth > 0) {
+          img.style.display = 'block';
+          if (fallback) fallback.style.display = 'none';
+          return;
+        }
+
+        img.onload = () => {
+          img.style.display = 'block';
+          if (fallback) fallback.style.display = 'none';
+        };
+
+        // Strip extension to test multiple formats if needed (.jpeg, .jpg, .png, .webp)
+        const dotIdx = item.photo.lastIndexOf('.');
+        const base = dotIdx !== -1 ? item.photo.substring(0, dotIdx) : item.photo;
+        const candidates = [
+          item.photo,
+          base + '.jpeg',
+          base + '.jpg',
+          base + '.png',
+          base + '.webp'
+        ];
+        const uniqueCandidates = [...new Set(candidates)];
+
+        function tryCandidates(list, i = 0) {
+          if (i >= list.length) {
+            // None found: fall back to cute drawing
+            img.style.display = 'none';
+            if (fallback) fallback.style.display = 'flex';
+            return;
+          }
+
+          const tester = new Image();
+          tester.onload = () => {
+            img.src = list[i];
+            img.style.display = 'block';
+            if (fallback) fallback.style.display = 'none';
+          };
+          tester.onerror = () => {
+            tryCandidates(list, i + 1);
+          };
+          tester.src = list[i];
+        }
+
+        img.onerror = () => {
+          tryCandidates(uniqueCandidates, 1);
+        };
+      });
+    }
+    initAlbumPhotos();
+
+    function showSlide(index) {
+      sound.playPop();
+      currentSlide = index;
+
+      for (let i = 1; i <= totalSlides; i++) {
+        const slide = document.getElementById(`slide-img-${i}`);
+        if (i === currentSlide) {
+          slide.classList.remove('opacity-0');
+        } else {
+          slide.classList.add('opacity-0');
+        }
+      }
+
+      document.getElementById('polaroid-tag').textContent = slidesData[index - 1].tag;
+      document.getElementById('polaroid-caption').textContent = slidesData[index - 1].caption;
+      document.getElementById('polaroid-subcaption').textContent = slidesData[index - 1].sub;
+    }
+
+    document.getElementById('carousel-next-btn').addEventListener('click', (e) => {
+      e.stopPropagation();
+      let next = currentSlide + 1;
+      if (next > totalSlides) next = 1;
+      showSlide(next);
+    });
+
+    document.getElementById('carousel-prev-btn').addEventListener('click', (e) => {
+      e.stopPropagation();
+      let prev = currentSlide - 1;
+      if (prev < 1) prev = totalSlides;
+      showSlide(prev);
+    });
+
+    // Touch swipe gesture support for mobile phones & tablets
+    const polaroidCard = document.getElementById('polaroid-card');
+    let touchStartX = 0;
+    let touchEndX = 0;
+
+    polaroidCard.addEventListener('touchstart', (e) => {
+      touchStartX = e.changedTouches[0].screenX;
+    }, { passive: true });
+
+    polaroidCard.addEventListener('touchend', (e) => {
+      touchEndX = e.changedTouches[0].screenX;
+      if (touchStartX - touchEndX > 40) {
+        let next = currentSlide + 1;
+        if (next > totalSlides) next = 1;
+        showSlide(next);
+      } else if (touchEndX - touchStartX > 40) {
+        let prev = currentSlide - 1;
+        if (prev < 1) prev = totalSlides;
+        showSlide(prev);
+      }
+    }, { passive: true });
+
+    document.getElementById('to-step-4-btn').addEventListener('click', () => {
+      sound.playPop();
+      goToStep(4);
+    });
+
+    // ==========================================
+    // STEP 4: BOUQUET WISH CARDS FLIP
+    // ==========================================
+    const flowerCards = document.querySelectorAll('.flower-card');
+    let openedCards = new Set();
+    const pickedCountLabel = document.getElementById('flowers-picked-count');
+    const toStep5Btn = document.getElementById('to-step-5-btn');
+    const flowersHint = document.getElementById('flowers-progress-hint');
+
+    flowerCards.forEach(card => {
+      card.addEventListener('click', () => {
+        const id = card.getAttribute('data-card-id');
+        sound.playFlip();
+
+        card.classList.toggle('flipped');
+
+        if (card.classList.contains('flipped')) {
+          openedCards.add(id);
+          // Sparkle burst from the flower
+          confetti({
+            particleCount: 15,
+            spread: 45,
+            origin: { y: 0.55 },
+            colors: ['#f43f5e', '#fde047', '#fbcfe8']
+          });
+        }
+
+        pickedCountLabel.textContent = openedCards.size;
+
+        if (openedCards.size === 3) {
+          flowersHint.textContent = 'All 3 wishes unlocked! You’re ready for the letter ♡';
+          flowersHint.classList.add('bg-rose-100', 'text-rose-700');
+          toStep5Btn.classList.remove('hidden');
+          toStep5Btn.classList.add('flex');
+          sound.playSparkle();
+        }
+      });
+    });
+
+    toStep5Btn.addEventListener('click', () => {
+      sound.playPop();
+      goToStep(5);
+    });
+
+    // ==========================================
+    // STEP 5: FINAL CELEBRATION
+    // ==========================================
+    function triggerConfetti(intensity = 1) {
+      const count = Math.floor(100 * intensity);
+      // Heart shaped celebration burst
+      confetti({
+        particleCount: count,
+        spread: 100,
+        origin: { y: 0.6 },
+        colors: ['#ff4d6d', '#ff758f', '#ffb3c6', '#ffd6e0', '#fde047', '#f43f5e']
+      });
+
+      // Side cannons for full screen party effect
+      setTimeout(() => {
+        confetti({
+          particleCount: 40,
+          angle: 60,
+          spread: 55,
+          origin: { x: 0 }
+        });
+        confetti({
+          particleCount: 40,
+          angle: 120,
+          spread: 55,
+          origin: { x: 1 }
+        });
+      }, 250);
+    }
+
+    document.getElementById('final-celebrate-btn').addEventListener('click', () => {
+      sound.playSparkle();
+      triggerConfetti(1.5);
+    });
+
+    document.getElementById('restart-journey-btn').addEventListener('click', () => {
+      sound.playPop();
+      // Reset envelope & flower cards
+      envelopeFlap.classList.remove('open');
+      waxSealBtn.classList.remove('scale-125', 'opacity-0');
+      flowerCards.forEach(c => c.classList.remove('flipped'));
+      openedCards.clear();
+      pickedCountLabel.textContent = '0';
+      toStep5Btn.classList.add('hidden');
+      toStep5Btn.classList.remove('flex');
+      flowersHint.textContent = '0 of 3 flowers picked ✨';
+      flowersHint.classList.remove('bg-rose-100', 'text-rose-700');
+      goToStep(1);
+    });
+
+  </script>
+</body>
+</html>
